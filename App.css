@@ -6,16 +6,16 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background-color: #f5f7fa;
+    background-color: aquamarine;
 }
 
 .container {
     width: 600px;
-    margin: 40px auto;
+    margin: 40px;
     background: white;
     padding: 24px;
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
@@ -32,7 +32,7 @@ h1 {
 .formulario input {
     flex: 1;
     padding: 12px;
-    border: 1px solid #ccc;
+    border: 1px solid #dccc;
     border-radius: 6px;
 }
 
@@ -55,14 +55,16 @@ button:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     padding: 12px;
-
     border: 1px solid #eee;
-
     border-radius: 8px;
-
     margin-bottom: 10px;
+}
+
+.digitado {
+    text-align: center;
+    color: #666
+
 }
 
 .acoes {
@@ -72,19 +74,12 @@ button:hover {
 
 .concluida {
     text-decoration: line-through;
-    color: gray;
+    color: #666;
 }
 
 .vazio {
     text-align: center;
     color: #666;
     margin-top: 20px;
-}
-
-.digitado {
-    text-align: center;
-    color: #666;
-    margin-top: 10px;
-    margin-bottom: 10px;
 }
 

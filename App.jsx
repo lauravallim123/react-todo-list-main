@@ -1,147 +1,103 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import "./App.css";
-import TaskForm from "./components/TaskForm";
-import TaskList from "./components/TaskList";
+import FormComponent from "./components/FormComponent";
+import ListComponent from "./components/ListComponent";
+import { BotaoLimpar } from "./components/BotoesComponents";
 
 function App() {
+  const [texto, setTexto] = useState("");
+  const [tarefas, setTarefas] = useState(() => {
+    const tarefasSalvas = localStorage.getItem("tarefas");
+    return tarefasSalvas ? JSON.parse(tarefasSalvas) : [];
+  });
 
-    const [texto, setTexto] = useState("");
-    const [tarefas, setTarefas] = useState([]);
+  useEffect(() => {
+    localStorage.setItem("tarefas", JSON.stringify(tarefas));
+  }, [tarefas]);
 
-    function adicionarTarefa() {
-        if (texto.trim() !== "") {
-            if (tarefas.includes(texto)) {
-                alert("Essa tarefa já foi adicionada!");
-                return;
-            }
-            setTarefas([...tarefas, {
-                texto: texto,
-                concluida: false
-            }]);
-            setTexto("");
-        }
+  function adicionarTarefa() {
+    if (texto.trim() !== "") {
+      const tarefaJaExiste = tarefas.find(
+        (tarefa) => tarefa.texto.toLowerCase() === texto.trim().toLowerCase()
+      );
+
+      if (tarefaJaExiste) {
+        alert("Essa tarefa já foi adicionada!");
+        return;
+      }
+
+      const novaTarefa = {
+        texto: texto.trim(),
+        concluida: false,
+      };
+
+      setTarefas([...tarefas, novaTarefa]);
+      setTexto("");
     }
+  }
 
-    function removerTarefa(indiceRemover) {
-        const novaLista = tarefas.filter(
-            (_, indice) => indice !== indiceRemover
-        );
+  function limparTarefas() {
+    setTarefas([]);
+  }
 
-        setTarefas(novaLista);
-    }
-
-    function limparTarefas() {
-        setTarefas([]);
-    }
-
-    function concluirTarefa(indiceSelecionado) {
-        const novaLista = tarefas.map(
-            (tarefa, indice) => {
-                if (indice === indiceSelecionado) {
-                    return {
-                        ...tarefa,
-                        concluida: !tarefa.concluida
-                    };
-                }
-                return tarefa;
-            }
-        );
-        setTarefas(novaLista);
-    }
-
-    return (
-        <div className="container">
-            <h1>Lista de Tarefas</h1>
-
-            <TaskForm
-                texto={texto}
-                setTexto={setTexto}
-                adicionarTarefa={
-                    adicionarTarefa
-                }
-            />
-
-            {/* <div className="formulario">
-                <input
-                    type="text"
-                    value={texto}
-                    onChange={(e) => setTexto(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            adicionarTarefa();
-                        }
-                    }}
-                    placeholder="Digite uma tarefa"
-                />                
-
-                <button onClick={adicionarTarefa}>
-                    Adicionar
-                </button>
-
-            </div> */}
-
-            <p className="digitado">
-                Você digitou: {texto}
-            </p>
-
-            {
-                tarefas.length === 0 &&
-                <p className="vazio">Nenhuma tarefa cadastrada.</p>
-            }
-
-            <TaskList
-                tarefas={tarefas}
-                concluirTarefa={
-                    concluirTarefa
-                }
-                removerTarefa={
-                    removerTarefa
-                }
-            />
-
-            {/* <ul className="lista">
-                {tarefas.map((tarefa, indice) => (
-                    <li
-                        key={indice}
-                        className="item">
-                        <span
-                            className={
-                                tarefa.concluida
-                                    ? "concluida"
-                                    : ""
-                            }
-                        >
-                            {tarefa.texto}
-                        </span>
-
-                        <div className="acoes">
-                            <button
-                                onClick={() => concluirTarefa(indice)}
-                            >
-                                {
-                                    tarefa.concluida
-                                        ? "Desfazer"
-                                        : "Concluir"
-                                }
-                            </button>
-
-                            <button
-                                onClick={() => removerTarefa(indice)}
-                            >
-                                Remover
-                            </button>
-                        </div>
-                    </li>
-                ))}
-            </ul> */}
-
-            <p className="digitado">Total tarefas: {tarefas.length}</p>
-
-            <button onClick={limparTarefas}>
-                Limpar Tarefas
-            </button>
-        </div>
+  function removerTarefa(indiceRemover) {
+    const listaAtualizada = tarefas.filter(
+      (_, indice) => indice !== indiceRemover
     );
+
+    setTarefas(listaAtualizada);
+  }
+
+  function concluirTarefa(indiceSelecionado) {
+    const listaAtualizada = tarefas.map((tarefa, indice) => {
+      if (indice === indiceSelecionado) {
+        return {
+          ...tarefa,
+          concluida: !tarefa.concluida,
+        };
+      }
+      return tarefa;
+    });
+
+    setTarefas(listaAtualizada);
+  }
+
+  return (
+    <div className="container">
+      {/* Header estruturado dentro do App */}
+      <header className="header">
+        <h1>Lista de Tarefas</h1>
+      </header>
+
+      <p className="digitado">Você digitou: {texto}</p>
+
+      {tarefas.length === 0 && (
+        <p className="vazio">Nenhuma tarefa cadastrada</p>
+      )}
+
+      <FormComponent
+        texto={texto}
+        adicionarTarefa={adicionarTarefa}
+        setTexto={setTexto}
+      />
+
+      <ListComponent
+        tarefas={tarefas}
+        concluirTarefa={concluirTarefa}
+        removerTarefa={removerTarefa}
+      />
+
+      {/* Footer estruturado dentro do App */}
+      <footer className="footer">
+        <p className="digitando">Total de tarefas: {tarefas.length}</p>
+      </footer>
+
+      {tarefas.length > 0 && (
+        <BotaoLimpar limparTarefas={limparTarefas} />
+      )}
+    </div>
+  );
 }
 
 export default App;
